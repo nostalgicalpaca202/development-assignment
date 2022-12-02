@@ -1,7 +1,7 @@
 # Spotify Top 100 Songs of 2022 
 
 ### Link to Deployed Website
-[https://nostalgicalpaca.github.io/development-assignment](https://nostalgicalpaca.github.io/development-assignment)
+[https://nostalgicalpaca202.github.io/development-assignment](https://nostalgicalpaca.github.io/development-assignment)
 
 ### Goal and Value of the Application
 This application shows all songs in the Spotify playlist [*TOP 100 Songs of 2022 (Best Hit Music Playlist)*](https://open.spotify.com/playlist/1EVE9kOZ2i4171hNdvWVhU). You are able to view more information about the songs in this application than on the Spotify playlist! For example, you can see the popularity of the song - a score calculated by Spotify's algorithm. In addition, you can sort and apply filters to the songs. This application also allows you to add and remove songs to a "playlist".
