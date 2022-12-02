@@ -1,12 +1,10 @@
 import './App.css';
 import { useState } from "react";
-import trackData from "./assets/track-data.json"
-import TrackItem from "./components/trackItem"
+import { Box, CssBaseline, Toolbar } from "@mui/material";
+import trackData from "./assets/track-data.json";
+import TrackItem from "./components/trackItem";
 import SideBar from './components/SideBar';
-
-// Rest of work overview: (1) core logic - sorting, filtering, added to playlist, aggregator (2) adding main buttons for doing sorting, filtering, and adding to playlist (3) styling 
-// suggestion: make test data and test filters/sorting/playlisted once done
-// 11/29 workflow: 1. data filtering functions apply to App() -> 2. make buttons for filter & child component logic implementation -> 3. test filter -> 4. add button for favorite & filter for favorite -> 5. test favorite -> 6. sorting work & aggregator work (note: aggregator needs to be its OWN component)
+import TopBar from './components/TopBar';
 
 
 // add extra fields "playlisted" and "item_id" to each item
@@ -15,29 +13,28 @@ trackData.forEach((item, index) => {
   item.item_id = index;
 });
 
+
 function App() {
-  const [data, setData] = useState(trackData.slice(0,13)); 
-  const [displayType, setDisplayType] = useState("All"); // Playlist or All
-  const [albumTypes, setAlbumTypes] = useState({"single" : true, "album" : true});
+  const [data, setData] = useState(trackData); 
+  const [displayType, setDisplayType] = useState("All"); // "All" or "Playlist"
+  const [albumType, setAlbumType] = useState("All"); // "All" or "single" or "album"
   const [explicity, setExplicity] = useState("All"); // "All" or "Explicit" or "Non-Explicit" 
+  const [sortType, setSortType] = useState("Most Popular") // "Most Popular" or "Alphabetical (A-Z)"
 
-  // ****************************************************************
-  // // TO-DO: implement matchesAlbumTypes and matchesExplicity (filter functions to apply to items) - see slides 20, 21 - item here is an item in the state "data" (array)
-  // const matchesAlbumTypes = (item) => {
-  //   console.log(albumTypes[item.track.album.album_type]);
-  //   return albumTypes[item.track.album.album_type];
-  // }
 
-  // // works when start with true true and uncheck
-  // // then once unchecked one of them, anything else would not work - like check again or uncheck the other
-  // // but does not work if initialized to true true on mount (i.e. checking boxes updates albumType but data does not get filtered again)
-  // const handleAlbumTypesChange = (typeChanged, newBoolVal) => {
-  //   const albumTypesArr = albumTypes;
-  //   albumTypesArr[typeChanged] = newBoolVal;
-  //   setAlbumTypes(albumTypesArr);
-  //   console.log(albumTypes);
-  // }
-  // ****************************************************************
+  // item here is an item in the state "data" (array)
+  const matchesAlbumType = (item) => {
+    if (albumType === "All") {
+      return true;
+    } else {
+      return albumType === item.track.album.album_type;
+    }
+  }
+
+
+  const handleAlbumTypeChange = eventKey => {
+    setAlbumType(eventKey);
+  }
 
 
   const matchesExplicity = (item) => {
@@ -50,11 +47,12 @@ function App() {
     } 
   }
 
+
   const handleExplicityChange = eventKey => {
     setExplicity(eventKey);
   }
 
-  // TO-DO: implement matchesDisplayType (also a filter to apply to items)
+
   const matchesDisplayType = (item) => {
     if (displayType === "All") {
       return true;
@@ -63,11 +61,12 @@ function App() {
     }
   }
 
+
   const handleDisplayTypeChange = checked => {
     setDisplayType(checked ? "Playlist" : "All");
   }
 
-  // TO-DO: implement addToPlaylist (to be passed into item component)
+
   const addOrRemoveItemInPlaylist = (this_item_id) => {
     const all_data = [...data];
     all_data[this_item_id].playlisted = !(all_data[this_item_id].playlisted);
@@ -76,33 +75,50 @@ function App() {
     return (all_data[this_item_id].playlisted);
   }
 
-  // TO-DO: implement sorting functions and states -> see slides
-  // note: sorting also needs a reset ("None") button
 
-  // TO-DO: calculate aggregator using matchesDisplayType filter in map and reduce function -> see example site source code
+  const sortByDecPopularity = (item1, item2) => {
+    return (item2.track.popularity - item1.track.popularity);
+  }
 
-  const filteredData = data.filter(matchesExplicity).filter(matchesDisplayType);
 
+  const sortByIncAlphabetical = (item1, item2) => {
+    return (item1.track.name > item2.track.name ? 1 : (item1.track.name === item2.track.name ? 0 : -1)); 
+  }
+
+
+  const handleSortTypeChange = eventKey => {
+    setSortType(eventKey);
+  }
+
+
+  const filteredData = data.filter(matchesAlbumType).filter(matchesExplicity).filter(matchesDisplayType);
+  const sortedData = filteredData.sort(sortType === "Most Popular" ? sortByDecPopularity : sortByIncAlphabetical);
+  console.log(sortedData.length);
+
+  
   return (
-    <div className="app">
+    <Box component="div" sx={{ display: "flex", flexDirection: "row" }}>
+    <CssBaseline/>
 
-      <div className="title-bar">
-        <h1>Spotify Top 100 Songs of 2022</h1>
-      </div>
+      <Box component="div" sx={{ width: 1/5 }}>
+      <SideBar handleAlbumTypeChange={handleAlbumTypeChange} handleExplicityChange={handleExplicityChange} handleSortTypeChange={handleSortTypeChange}/>
+      </Box>
 
-      <div className="main-grid">
-        <div className="items-container">
-          <p>{filteredData.length}</p>
-          {filteredData.map((item) => (
-              <TrackItem item={item} addOrRemoveItemInPlaylist={addOrRemoveItemInPlaylist}/>
-          ))}
-        </div>
-        <div className="side-bar">
-          <SideBar handleExplicityChange={handleExplicityChange} handleDisplayTypeChange={handleDisplayTypeChange}/>
-        </div>
-      </div>
+      <Box component="div" sx={{ width: 4/5, display: "flex", flexDirection: "column"}}>
+      <Box component="div">
+        <TopBar allData={data} displayType={displayType} handleDisplayTypeChange={handleDisplayTypeChange}/>
+      </Box>
+      <Toolbar/>
+      <Toolbar/>
+      <Toolbar/>
+      <Box component="main" className="items-container">
+        {sortedData.map((item) => (
+            <TrackItem item={item} addOrRemoveItemInPlaylist={addOrRemoveItemInPlaylist}/>
+        ))}
+      </Box>
+      </Box>
 
-    </div>
+    </Box>
   );
 }
 

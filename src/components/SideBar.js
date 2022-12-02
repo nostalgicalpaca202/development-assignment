@@ -1,53 +1,138 @@
-import "./SideBar.css";
-import Nav from 'react-bootstrap/Nav';
+import { ToggleButtonGroup, ToggleButton, Toolbar, Drawer, Box, Typography, Divider} from '@mui/material';
+import { useState } from "react";
+
 
 const SideBar = (props) => {
-    // ****************************************************************
-    // const handleAlbumTypesChange = props.handleAlbumTypesChange;
+    const handleAlbumTypeChange = props.handleAlbumTypeChange;
     const handleExplicityChange = props.handleExplicityChange;
-    const handleDisplayTypeChange = props.handleDisplayTypeChange;
+    const handleSortTypeChange = props.handleSortTypeChange;
 
-    // TO-DO:
-    // 1. separate filter buttons and sort buttons into child components?
-    // 2. material UI or bootstrap nav bar or checkbox? seems like nav bar cannot allow filters to stack on top of one another
-    // checkbox example: https://edstem.org/us/courses/26929/discussion/2225189
-    // 3. we might need to change our filtering function back in App due to stacking filters
+    const [albumText, setAlbumText] = useState("All");
+    const [explicityText, setExplicityText] = useState("All");
+    const [sortText, setSortText] = useState("Most Popular");
 
     return (
-        <div>
-            <h3>Album Type</h3>
-            {/* ****************************************************** */}
-
-            {/* <div>
-                Two checkboxes, each has a value, onclick executes callback that changes state of parent
-                <label>
-                    <input type="checkbox" onChange={(event) => {handleAlbumTypesChange(event.target.value, event.target.checked); console.log(event.target.value, event.target.checked)}} value={"single"}/>
+        <Drawer
+            sx={{
+            width: 1/5,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+                width: 1/5,
+                boxSizing: 'border-box',
+            },
+            }}
+            variant="permanent"
+            anchor="left">
+            <Toolbar />
+            <Box component="div" sx={{display: "flex", flexDirection: "column", paddingLeft: 3}}>
+            <div>
+                <Typography variant="h5" component="div" sx={{ m: '1rem' }}>
+                    Sort By
+                </Typography>
+                <ToggleButtonGroup value={sortText} exclusive onChange={(event, newValue) => {if (newValue !== null) {setSortText(newValue); handleSortTypeChange(newValue);}}} sx={{ mb: '1rem', mx: '1rem'}}
+                >
+                <ToggleButton value="Most Popular">
+                    Most Popular
+                </ToggleButton>
+                <ToggleButton value="Alphabetical (A-Z)">
+                    Alphabetical (A-Z)
+                </ToggleButton>
+                </ToggleButtonGroup>
+            </div>
+            <div>
+                <Typography variant="h5" component="div" sx={{ m: '1rem' }}>
+                    Filters
+                </Typography>
+                <Typography variant="subtitle2" component="div" sx={{ mx: '1rem', my: '0.2rem'}}>
+                    Album Type
+                </Typography>
+                <ToggleButtonGroup value={albumText} exclusive onChange={(event, newValue) => {if (newValue !== null) {setAlbumText(newValue); handleAlbumTypeChange(newValue);}}} sx={{ m: '1rem' }}
+                >
+                <ToggleButton value="All">
+                    All
+                </ToggleButton>
+                <ToggleButton value="single">
                     Single
-                </label>
-                <label>
-                    <input type="checkbox" onChange={(event) => {handleAlbumTypesChange(event.target.value, event.target.checked); console.log(event.target.value, event.target.checked)}} value={"album"}/>
+                </ToggleButton>
+                <ToggleButton value="album">
                     Album
-                </label>
-            </div> */}
-            {/* ****************************************************** */}
+                </ToggleButton>
+                </ToggleButtonGroup>
+            </div>
+            <div>
+                <Typography variant="subtitle2" component="div" sx={{ mx: '1rem', my: '0.2rem'}}>
+                    Lyrics
+                </Typography>
+                <ToggleButtonGroup value={explicityText} exclusive onChange={(event, newValue) => {if (newValue !== null) {setExplicityText(newValue); handleExplicityChange(newValue);}}} sx={{ m: '1rem' }}
+                >
+                <ToggleButton value="All">
+                    All
+                </ToggleButton>
+                <ToggleButton value="Explicit">
+                    Explicit
+                </ToggleButton>
+                <ToggleButton value="Non-Explicit">
+                    Non-Explicit
+                </ToggleButton>
+                </ToggleButtonGroup>
+            </div>
+            </Box>
+        </Drawer>
+    );
 
-            <div>
-                <h3>Lyrics</h3>
-                <Nav onSelect={handleExplicityChange}>
-                    <Nav.Item><Nav.Link eventKey="All">All</Nav.Link></Nav.Item>
-                    <Nav.Item><Nav.Link eventKey="Explicit">Explicit</Nav.Link></Nav.Item>
-                    <Nav.Item><Nav.Link eventKey="Non-Explicit">Non-Explicit</Nav.Link></Nav.Item>
-                </Nav>
-            </div>
-            <div>
-                <h3>Playlist</h3>
-                <label>
-                    <input type="checkbox" onChange={(event) => {handleDisplayTypeChange(event.target.checked)}}/>
-                    In My Playlist
-                </label>
-            </div>
-        </div>
-    )
+    // return (
+    //     <div>
+    //         <div>
+    //             <h3>Sort By</h3>
+    //             <ToggleButtonGroup value={sortText} exclusive onChange={(event, newValue) => {handleSortTypeChange(newValue); if (newValue !== null) {setSortText(newValue);}}}
+    //             >
+    //             <ToggleButton value="Most Popular">
+    //                 Most Popular
+    //             </ToggleButton>
+    //             <ToggleButton value="Alphabetical (A-Z)">
+    //                 Alphabetical (A-Z)
+    //             </ToggleButton>
+    //             </ToggleButtonGroup>
+    //         </div>
+    //         <div>
+    //             <h3>Album Type</h3>
+    //             <ToggleButtonGroup value={albumText} exclusive onChange={(event, newValue) => {handleAlbumTypeChange(newValue); if (newValue !== null) {setAlbumText(newValue);}}}
+    //             >
+    //             <ToggleButton value="All">
+    //                 All
+    //             </ToggleButton>
+    //             <ToggleButton value="single">
+    //                 Single
+    //             </ToggleButton>
+    //             <ToggleButton value="album">
+    //                 Album
+    //             </ToggleButton>
+    //             </ToggleButtonGroup>
+    //         </div>
+    //         <div>
+    //             <h3>Lyrics</h3>
+    //             <ToggleButtonGroup value={explicityText} exclusive onChange={(event, newValue) => {handleExplicityChange(newValue); if (newValue !== null) {setExplicityText(newValue);}}}
+    //             >
+    //             <ToggleButton value="All">
+    //                 All
+    //             </ToggleButton>
+    //             <ToggleButton value="Explicit">
+    //                 Explicit
+    //             </ToggleButton>
+    //             <ToggleButton value="Non-Explicit">
+    //                 Non-Explicit
+    //             </ToggleButton>
+    //             </ToggleButtonGroup>
+    //         </div>
+    //         <div>
+    //             <h3>Playlist</h3>
+    //             <label>
+    //                 <input type="checkbox" onChange={(event) => {handleDisplayTypeChange(event.target.checked)}}/>
+    //                 In My Playlist
+    //             </label>
+    //         </div>
+    //     </div>
+    // )
 }
 
 export default SideBar;
