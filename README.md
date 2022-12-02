@@ -34,3 +34,4 @@ Here is a breakdown of the props and states of each component:
     - A callback function that adds or removes the item from My Playlist
     - The object that contains all the information on the item
   - No states are used in this component
+![Components Diagram](component-diagram.jpg)
